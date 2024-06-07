@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas with Undo</title>
+    <style>
+        #toolbar {
+            width: 600px;
+            height: 30px;
+            position: absolute;
+            top: 20px;
+        
+            border: 1px solid black;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 5px;
+            border: 1px solid rgb(213, 213, 213);
+            border-radius: 10px;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative
+        }
+
+        #toolbar img {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 3px;
+
+
+        }
+
+        img:hover {
+            background-color: rgb(251, 237, 218);
+        }
+
+        #color-picker {
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .clear-canvas {
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: rgb(251, 237, 218);
+            border: none;
+        }
+
+        .save-img {
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: rgb(218, 168, 99);
+            border: none;
+        }
+    </style>
+</head>
+
+<body style="position : relative">
+    <div id="toolbar">
+        <div class="option tool"  id="brush">
+            <img src="img/brush-3-svgrepo-com.svg" id="brush" alt="">
+        </div>
+        <div class="option tool"  id="eraser">
+            <img src="img/eraser-svgrepo-com.svg" id="eraser" alt="">
+        </div>
+        <div class="option tool " id="rectangle" >
+            <img src="img/rectangle-wide-svgrepo-com.svg" id="rectangle" alt="">
+        </div>
+        <div class="option tool" id="triangle" >
+            <img src="img/triangle-svgrepo-com.svg" id="triangle" alt="">
+        </div>
+        <div class="option tool"  id="circle" >
+            <img src="img/circle-svgrepo-com.svg" id="circle" alt="">
+        </div>
+        <div class="option tool" id="line">
+            <img src="img/line-svgrepo-com.svg" id="line" alt="">
+        </div>
+        <div class="">
+            <img src="img/fill-drip-svgrepo-com.svg" alt="">
+            <input type="checkbox" id="fill-color">
+        </div>
+        <div>
+
+            <input type="color" id="color-picker" value="#fff">
+
+        </div>
+        <div  id="undo" >
+            <img src="img/undo-left-round-svgrepo-com.svg" id="undo" alt="undo" title="undo">
+        </div>
+        <div>
+            <img src="img/redo-right-round-svgrepo-com.svg" id="redo" alt="" title="redo">
+        </div>
+        <div  id="redo">
+            <button class="clear-canvas">Clear</button>
+        </div>
+        <div>
+          <a href="#">  <button class="save-img" >Save</button></a> 
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
