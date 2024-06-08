@@ -90,7 +90,21 @@
         justify-content: flex-start;
         align-items: flex-start;
         padding-left: 60px; 
-    }}
+    }
+
+    #fill-color-div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin-top: 10px;
+    }
+    .clear-canvas , .save-img {
+        padding : 3px;
+        margin-top: 3px;
+    }
+
+}
     </style>
 </head>
 
@@ -114,7 +128,13 @@
         <div class="option tool" id="line">
             <img src="img/line-svgrepo-com.svg" id="line" alt="">
         </div>
-        <div class="">
+        <div class="option tool" id="arrow">
+            <img src="img/arrow-up-right-svgrepo-com.svg" id="arrow" alt="">
+        </div>
+        <div class="option tool" id="text">
+            <img src="img/text-svgrepo-com.svg" id="text" alt="">
+        </div>
+        <div class="" style="display: flex; justify-content: center; align-items: center;" id="fill-color-div">
             <img src="img/fill-drip-svgrepo-com.svg" alt="">
             <input type="checkbox" id="fill-color">
         </div>

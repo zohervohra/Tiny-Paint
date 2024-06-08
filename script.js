@@ -13,8 +13,10 @@ const canvas = document.querySelector("canvas"),
 let prevMouseX, prevMouseY, snapshot,
     isDrawing = false,
     selectedTool = "brush",
-    brushWidth = 5,
+    brushWidth = 3,
     selectedColor = "#000",
+    userText = "",
+    textX, textY, textWidth, textHeight,
     history = [],
     redoHistory = [],
     currentStep = -1;
@@ -122,6 +124,30 @@ const drawTriangle = (e) => {
     fillColor.checked ? ctx.fill() : ctx.stroke();
 }
 
+const drawArrow = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
+    ctx.beginPath();
+
+    const angle = Math.atan2(clientY - canvas.offsetTop - prevMouseY, clientX - canvas.offsetLeft - prevMouseX);
+    const headLength = 15;
+
+    ctx.moveTo(prevMouseX, prevMouseY);
+
+    ctx.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+    ctx.lineTo(
+        (clientX - canvas.offsetLeft) - headLength * Math.cos(angle - Math.PI / 6),
+        (clientY - canvas.offsetTop) - headLength * Math.sin(angle - Math.PI / 6)
+    );
+    ctx.moveTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+    ctx.lineTo(
+        (clientX - canvas.offsetLeft) - headLength * Math.cos(angle + Math.PI / 6),
+        (clientY - canvas.offsetTop) - headLength * Math.sin(angle + Math.PI / 6)
+    );
+
+    ctx.closePath();
+    ctx.stroke();
+}
+
 // function to get event coordinates for both mouse and touch events
 const getEventCoordinates = (e) => {
     if (e.touches) {
@@ -166,8 +192,38 @@ const drawing = (e) => {
         drawCircle(e);
     } else if (selectedTool === "line") {
         drawLine(e);
+    } else if (selectedTool === "arrow") {
+        drawArrow(e);
+    } else if (selectedTool === "text") {
+        addText(e);
     } else {
         drawTriangle(e);
+    }
+}
+
+// function to stop drawing (when mouse or touch is up)
+const stopDraw = () => {
+    isDrawing = false;
+}
+
+// add text to canvas
+const addText = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
+    // ctx.putImageData(snapshot, 0, 0); // restore the snapshot before adding text
+    ctx.fillStyle = selectedColor;
+    ctx.font = "20px Arial";
+    textX = clientX - canvas.offsetLeft;
+    textY = clientY - canvas.offsetTop;
+    ctx.fillText(userText, textX, textY);
+    textWidth = ctx.measureText(userText).width;
+    textHeight = 20; // approximate height of text
+    saveState();
+}
+
+const handleText = () => {
+    userText = prompt("Enter the text you want to add:");
+    if (userText) {
+        selectedTool = "text";
     }
 }
 
@@ -175,6 +231,7 @@ const drawing = (e) => {
 toolBtns.forEach(btn => {
     btn.addEventListener("click", () => {
         selectedTool = btn.id;
+        console.log(selectedTool)
     });
 });
 
@@ -210,16 +267,32 @@ redoBtn.addEventListener("click", redo);
 // mouse down -> mouse move -> mouse up
 // touch start -> touch move -> touch end
 // event handler
-canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousedown", (e) => {
+    if (selectedTool === "text") {
+        handleText();
+        if (userText) {
+            addText(e);
+        }
+    } else {
+        startDraw(e);
+    }
+});
 canvas.addEventListener("mousemove", drawing);
-canvas.addEventListener("mouseup", () => isDrawing = false);
+canvas.addEventListener("mouseup", stopDraw);
 
 canvas.addEventListener("touchstart", (e) => {
     e.preventDefault(); // Prevent scrolling when touching canvas
-    startDraw(e);
+    if (selectedTool === "text") {
+        handleText();
+        if (userText) {
+            addText(e);
+        }
+    } else {
+        startDraw(e);
+    }
 });
 canvas.addEventListener("touchmove", (e) => {
     e.preventDefault(); // Prevent scrolling when touching canvas
     drawing(e);
 });
-canvas.addEventListener("touchend", () => isDrawing = false);
+canvas.addEventListener("touchend", stopDraw);
