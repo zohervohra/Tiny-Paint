@@ -25,7 +25,7 @@ const setCanvasBackground = () => {
     ctx.fillStyle = selectedColor;
 }
 
-window.addEventListener("load", () => {
+const resizeCanvas = () => {
     // setting the canvas width and height
     canvas.width = window.innerWidth - 30;
     canvas.height = window.innerHeight - 25;
@@ -49,7 +49,10 @@ window.addEventListener("load", () => {
     canvas.style.height = `${rect.height}px`;
 
     setCanvasBackground();
-});
+}
+
+window.addEventListener("load", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
 
 // Save canvas state to history
 const saveState = () => {
@@ -150,8 +153,6 @@ const startDraw = (e) => {
 // drawing function for mouse move or touch move
 const drawing = (e) => {
     if (!isDrawing) return;
-
-    // get event coordinates to generalize the code for both mouse and touch events
     const { clientX, clientY } = getEventCoordinates(e);
     ctx.putImageData(snapshot, 0, 0);
 
@@ -202,7 +203,7 @@ saveImg.addEventListener("click", () => {
     link.click(); 
 });
 
-// event handler for undo , redo
+// event handler for undo, redo
 undoBtn.addEventListener("click", undo);
 redoBtn.addEventListener("click", redo);
 
