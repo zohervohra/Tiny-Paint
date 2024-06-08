@@ -11,7 +11,7 @@
             height: 30px;
             position: absolute;
             top: 20px;
-        
+
             border: 1px solid black;
             display: flex;
             justify-content: space-around;
@@ -68,24 +68,48 @@
             background-color: rgb(218, 168, 99);
             border: none;
         }
+
+
+        @media (max-width: 800px) {
+            #toolbar {
+                width: auto;
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 10px;
+                height: auto;
+                min-height: 300px;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            body {
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding-left: 60px;
+            }
+        }
     </style>
 </head>
 
 <body style="position : relative">
     <div id="toolbar">
-        <div class="option tool"  id="brush">
+        <div class="option tool" id="brush">
             <img src="img/brush-3-svgrepo-com.svg" id="brush" alt="">
         </div>
-        <div class="option tool"  id="eraser">
+        <div class="option tool" id="eraser">
             <img src="img/eraser-svgrepo-com.svg" id="eraser" alt="">
         </div>
-        <div class="option tool " id="rectangle" >
+        <div class="option tool " id="rectangle">
             <img src="img/rectangle-wide-svgrepo-com.svg" id="rectangle" alt="">
         </div>
-        <div class="option tool" id="triangle" >
+        <div class="option tool" id="triangle">
             <img src="img/triangle-svgrepo-com.svg" id="triangle" alt="">
         </div>
-        <div class="option tool"  id="circle" >
+        <div class="option tool" id="circle">
             <img src="img/circle-svgrepo-com.svg" id="circle" alt="">
         </div>
         <div class="option tool" id="line">
@@ -100,17 +124,17 @@
             <input type="color" id="color-picker" value="#fff">
 
         </div>
-        <div  id="undo" >
+        <div id="undo">
             <img src="img/undo-left-round-svgrepo-com.svg" id="undo" alt="undo" title="undo">
         </div>
         <div>
             <img src="img/redo-right-round-svgrepo-com.svg" id="redo" alt="" title="redo">
         </div>
-        <div  id="redo">
+        <div id="redo">
             <button class="clear-canvas">Clear</button>
         </div>
         <div>
-          <a href="#">  <button class="save-img" >Save</button></a> 
+            <a href="#"> <button class="save-img">Save</button></a>
         </div>
     </div>
     <canvas id="canvas"></canvas>

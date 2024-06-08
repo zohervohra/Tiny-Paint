@@ -9,7 +9,7 @@ const canvas = document.querySelector("canvas"),
     redoBtn = document.getElementById('redo'),
     ctx = canvas.getContext("2d");
 
-    // intial values of variables 
+// initial values of variables 
 let prevMouseX, prevMouseY, snapshot,
     isDrawing = false,
     selectedTool = "brush",
@@ -26,15 +26,14 @@ const setCanvasBackground = () => {
 }
 
 window.addEventListener("load", () => {
-
-    // setting the canvas widht and height
+    // setting the canvas width and height
     canvas.width = window.innerWidth - 30;
     canvas.height = window.innerHeight - 25;
-           
 
-    // below code is so that the resolution of the canvas is maintained when scaling src:https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    // below code is so that the resolution of the canvas is maintained when scaling
+    // src: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
 
-        // Get the DPR and size of the canvas
+    // Get the DPR and size of the canvas
     const dpr = window.devicePixelRatio;
     const rect = canvas.getBoundingClientRect();
 
@@ -49,9 +48,7 @@ window.addEventListener("load", () => {
     canvas.style.width = `${rect.width}px`;
     canvas.style.height = `${rect.height}px`;
 
-
     setCanvasBackground();
-   
 });
 
 // Save canvas state to history
@@ -83,47 +80,65 @@ const redo = () => {
     }
 }
 
-
 // shapes
 // rectangle
 const drawRect = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
     if (!fillColor.checked) {
-        return ctx.strokeRect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, prevMouseX - e.clientX, prevMouseY - e.clientY);
+        return ctx.strokeRect(clientX - canvas.offsetLeft, clientY - canvas.offsetTop, prevMouseX - clientX, prevMouseY - clientY);
     }
-    ctx.fillRect(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop, prevMouseX - e.clientX, prevMouseY - e.clientY);
+    ctx.fillRect(clientX - canvas.offsetLeft, clientY - canvas.offsetTop, prevMouseX - clientX, prevMouseY - clientY);
 }
 
 // line
-const drawLine = (e) => {   
+const drawLine = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
     ctx.beginPath();
     ctx.moveTo(prevMouseX, prevMouseY);
-    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
     ctx.stroke();
 }
 
 // circle
 const drawCircle = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
     ctx.beginPath();
-    let radius = Math.sqrt(Math.pow((prevMouseX - e.clientX), 2) + Math.pow((prevMouseY - e.clientY), 2));
+    let radius = Math.sqrt(Math.pow((prevMouseX - clientX), 2) + Math.pow((prevMouseY - clientY), 2));
     ctx.arc(prevMouseX - canvas.offsetLeft, prevMouseY - canvas.offsetTop, radius, 0, 2 * Math.PI);
     fillColor.checked ? ctx.fill() : ctx.stroke();
 }
 
 // triangle
 const drawTriangle = (e) => {
+    const { clientX, clientY } = getEventCoordinates(e);
     ctx.beginPath();
     ctx.moveTo(prevMouseX - canvas.offsetLeft, prevMouseY - canvas.offsetTop);
-    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-    ctx.lineTo(prevMouseX * 2 - e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
+    ctx.lineTo(prevMouseX * 2 - clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
     ctx.closePath();
     fillColor.checked ? ctx.fill() : ctx.stroke();
 }
 
-// function to start draw (when mouse is down)
+// function to get event coordinates for both mouse and touch events
+const getEventCoordinates = (e) => {
+    if (e.touches) {
+        return {
+            clientX: e.touches[0].clientX,
+            clientY: e.touches[0].clientY
+        };
+    }
+    return {
+        clientX: e.clientX,
+        clientY: e.clientY
+    };
+}
+
+// function to start draw (when mouse or touch is down)
 const startDraw = (e) => {
     isDrawing = true;
-    prevMouseX = e.clientX - canvas.offsetLeft;
-    prevMouseY = e.clientY - canvas.offsetTop;
+    const { clientX, clientY } = getEventCoordinates(e);
+    prevMouseX = clientX - canvas.offsetLeft;
+    prevMouseY = clientY - canvas.offsetTop;
     ctx.beginPath();
     ctx.lineWidth = brushWidth;
     ctx.strokeStyle = selectedColor;
@@ -132,20 +147,23 @@ const startDraw = (e) => {
     saveState();
 }
 
-// drawing function for mouse move
+// drawing function for mouse move or touch move
 const drawing = (e) => {
     if (!isDrawing) return;
+
+    // get event coordinates to generalize the code for both mouse and touch events
+    const { clientX, clientY } = getEventCoordinates(e);
     ctx.putImageData(snapshot, 0, 0);
 
     if (selectedTool === "brush" || selectedTool === "eraser") {
         ctx.strokeStyle = selectedTool === "eraser" ? "#fff" : selectedColor;
-        ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        ctx.lineTo(clientX - canvas.offsetLeft, clientY - canvas.offsetTop);
         ctx.stroke();
     } else if (selectedTool === "rectangle") {
         drawRect(e);
     } else if (selectedTool === "circle") {
         drawCircle(e);
-    } else if  (selectedTool === "line") {
+    } else if (selectedTool === "line") {
         drawLine(e);
     } else {
         drawTriangle(e);
@@ -155,9 +173,7 @@ const drawing = (e) => {
 // for getting the tool selected
 toolBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-        console.log(toolBtns , 'abc')
         selectedTool = btn.id;
-        console.log(selectedTool , 'xys')
     });
 });
 
@@ -186,17 +202,23 @@ saveImg.addEventListener("click", () => {
     link.click(); 
 });
 
-
-
-
-
 // event handler for undo , redo
 undoBtn.addEventListener("click", undo);
 redoBtn.addEventListener("click", redo);
 
-
 // mouse down -> mouse move -> mouse up
+// touch start -> touch move -> touch end
 // event handler
 canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", drawing);
 canvas.addEventListener("mouseup", () => isDrawing = false);
+
+canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault(); // Prevent scrolling when touching canvas
+    startDraw(e);
+});
+canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault(); // Prevent scrolling when touching canvas
+    drawing(e);
+});
+canvas.addEventListener("touchend", () => isDrawing = false);
